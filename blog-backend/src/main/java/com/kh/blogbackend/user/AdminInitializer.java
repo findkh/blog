@@ -24,7 +24,7 @@ public class AdminInitializer implements CommandLineRunner {
         if (!userRepository.existsByUsername("admin")) {
             User admin = User.builder()
                     .username("admin")
-                    .password(passwordEncoder.encode("admin123")) // 평문은 코드에서만
+                    .password(passwordEncoder.encode("1234")) // 평문은 코드에서만
                     .role("ADMIN")
                     .build();
 

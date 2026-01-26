@@ -4,6 +4,8 @@ import com.kh.blogbackend.user.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,6 +14,14 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import tools.jackson.databind.ObjectMapper;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
@@ -23,30 +33,75 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> {})
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .userDetailsService(userDetailsService)
 
                 .authorizeHttpRequests(auth -> auth
-                        // 관리자 영역만 보호
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-
-                        // 그 외 모든 요청은 공개
                         .anyRequest().permitAll()
                 )
 
                 .formLogin(form -> form
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/admin", true)
+                        .loginProcessingUrl("/api/login")
+                        .successHandler((request, response, authentication) -> {
+                            response.setStatus(HttpStatus.OK.value());
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            response.setCharacterEncoding("UTF-8");
+
+                            Map<String, Object> result = new HashMap<>();
+                            result.put("success", true);
+                            result.put("message", "Login successful");
+                            result.put("username", authentication.getName());
+
+                            ObjectMapper mapper = new ObjectMapper();
+                            response.getWriter().write(mapper.writeValueAsString(result));
+                        })
+                        .failureHandler((request, response, exception) -> {
+                            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            response.setCharacterEncoding("UTF-8");
+
+                            Map<String, Object> result = new HashMap<>();
+                            result.put("success", false);
+                            result.put("message", "Invalid username or password");
+
+                            ObjectMapper mapper = new ObjectMapper();
+                            response.getWriter().write(mapper.writeValueAsString(result));
+                        })
                         .permitAll()
                 )
 
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/")
+                        .logoutUrl("/api/logout")
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(HttpStatus.OK.value());
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+                            Map<String, Object> result = new HashMap<>();
+                            result.put("success", true);
+                            result.put("message", "Logout successful");
+
+                            ObjectMapper mapper = new ObjectMapper();
+                            response.getWriter().write(mapper.writeValueAsString(result));
+                        })
                 );
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(List.of("*")); // 모든 origin 허용
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true); // 세션 쿠키 허용
+        configuration.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     @Bean
@@ -54,9 +109,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    /**
-     * 필요 시 수동 인증(API 로그인 등)에 사용
-     */
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration configuration) throws Exception {

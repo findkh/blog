@@ -6,6 +6,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
+/**
+ *Todo
+ * Tag 추가 
+ */
+
 @Entity
 @Table(name = "post", schema = "blog")
 @Getter
@@ -42,4 +47,7 @@ public class Post {
 
     @Column(nullable = false)
     private Long views = 0L; // 조회수
+
+    @Column(length = 500) 
+    private String thumbnail;
 }

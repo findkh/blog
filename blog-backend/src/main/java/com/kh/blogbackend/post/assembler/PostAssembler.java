@@ -21,6 +21,7 @@ public class PostAssembler {
                         .orElseThrow(() -> new IllegalArgumentException("Menu not found: " + request.getMenuId())))
                 .title(request.getTitle())
                 .content(request.getContent())
+                .thumbnail(request.getThumbnail()) // 추가: 썸네일 저장
                 .published(request.isPublished())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -33,6 +34,7 @@ public class PostAssembler {
                 .orElseThrow(() -> new IllegalArgumentException("Menu not found: " + request.getMenuId())));
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
+        post.setThumbnail(request.getThumbnail()); // 추가: 썸네일 업데이트
         post.setPublished(request.isPublished());
         post.setUpdatedAt(LocalDateTime.now());
     }

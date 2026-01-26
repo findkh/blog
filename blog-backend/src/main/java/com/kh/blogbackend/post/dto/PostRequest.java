@@ -3,6 +3,9 @@ package com.kh.blogbackend.post.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Getter
 @Setter
 public class PostRequest {
@@ -10,4 +13,6 @@ public class PostRequest {
     private String title;
     private String content;
     private boolean published;
+    private String thumbnail;
+    private List<String> deletedImages;
 }
