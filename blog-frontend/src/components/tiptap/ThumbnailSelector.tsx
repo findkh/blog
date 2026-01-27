@@ -1,47 +1,50 @@
+import { Check } from "lucide-react";
+
 interface ThumbnailSelectorProps {
   images: string[];
   selectedThumbnail: string | null;
   onSelect: (url: string) => void;
 }
 
-export const ThumbnailSelector = ({ images, selectedThumbnail, onSelect }: ThumbnailSelectorProps) => {
+export function ThumbnailSelector({
+  images,
+  selectedThumbnail,
+  onSelect,
+}: ThumbnailSelectorProps) {
   if (images.length === 0) return null;
 
   return (
-    <div className="mt-8 p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
-      <h3 className="text-sm font-semibold mb-2">썸네일 선택</h3>
-      <div className="grid grid-cols-6 md:grid-cols-8 gap-2">
-        {images.map((imageUrl, index) => {
-          const isSelected = selectedThumbnail === imageUrl;
-
-          return (
-            <button
-              key={`${imageUrl}-${index}`}
-              type="button"
-              onClick={() => onSelect(imageUrl)}
-              className={`relative aspect-square rounded overflow-hidden border-2 transition-all ${
-                isSelected ? "border-black scale-105 z-10" : "border-gray-200 hover:border-gray-300"
-              }`}
-            >
-              <img
-                src={imageUrl}
-                alt={`Thumbnail ${index}`}
-                className={`w-full h-full object-cover ${isSelected ? "opacity-100" : "opacity-70"}`}
-                onError={(e) => {
-                  e.currentTarget.src = "https://via.placeholder.com/150?text=Error";
-                }}
-              />
-              {isSelected && (
-                <div className="absolute top-1 right-1 bg-black text-white rounded-full p-0.5 shadow-md">
-                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                  </svg>
+    <div className="space-y-4 p-6 bg-card border border-border rounded-xl">
+      <h3 className="text-xl font-bold text-card-foreground">썸네일 선택</h3>
+      <p className="text-sm text-muted-foreground">
+        글 목록에 표시될 대표 이미지를 선택하세요
+      </p>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {images.map((url) => (
+          <button
+            key={url}
+            onClick={() => onSelect(url)}
+            className={`relative aspect-video rounded-lg overflow-hidden border-2 transition-all hover:scale-105 ${
+              selectedThumbnail === url
+                ? "border-primary shadow-lg ring-2 ring-primary/20"
+                : "border-border hover:border-primary/50"
+            }`}
+          >
+            <img
+              src={url}
+              alt="썸네일 옵션"
+              className="w-full h-full object-cover"
+            />
+            {selectedThumbnail === url && (
+              <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                <div className="bg-primary rounded-full p-2">
+                  <Check className="h-6 w-6 text-primary-foreground" />
                 </div>
-              )}
-            </button>
-          );
-        })}
+              </div>
+            )}
+          </button>
+        ))}
       </div>
     </div>
   );
-};
+}

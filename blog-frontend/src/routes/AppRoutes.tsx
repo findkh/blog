@@ -1,4 +1,10 @@
-import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { useState } from "react";
 import { MainLayout } from "../layouts/MainLayout";
 import { HomePage } from "../pages/HomePage";
@@ -10,6 +16,7 @@ import { AdminLogin } from "../pages/AdminLogin";
 import { useMenu } from "../hooks/useMenu";
 import type { MenuItem } from "../axios/menu/menu";
 import TiptapEditor from "../components/tiptap/TiptapEditor";
+import { PostDetailPage } from "../pages/PostDetailPage";
 
 const PAGE_COMPONENTS: Record<string, React.ComponentType<any>> = {
   ProfilePage,
@@ -33,11 +40,19 @@ export function AppRoutes() {
   };
 
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading menu...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading menu...
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="min-h-screen flex items-center justify-center text-red-500">Failed to load menu</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center text-red-500">
+        Failed to load menu
+      </div>
+    );
   }
 
   return (
@@ -49,7 +64,10 @@ export function AppRoutes() {
           isAdmin ? (
             <Navigate to="/home" replace />
           ) : (
-            <AdminLogin onLoginSuccess={handleLoginSuccess} onBackToHome={() => navigate("/home")} />
+            <AdminLogin
+              onLoginSuccess={handleLoginSuccess}
+              onBackToHome={() => navigate("/home")}
+            />
           )
         }
       />
@@ -69,7 +87,10 @@ export function AppRoutes() {
             currentPage={location.pathname}
           >
             <Routes>
-              <Route path="/home" element={<HomePage isAdmin={isAdmin} viewMode={viewMode} />} />
+              <Route
+                path="/home"
+                element={<HomePage isAdmin={isAdmin} viewMode={viewMode} />}
+              />
 
               {/* 메뉴 기반 라우트 */}
               {menuItems.map((item: MenuItem) => {
@@ -77,11 +98,23 @@ export function AppRoutes() {
                 if (!PageComponent) return null;
 
                 return (
-                  <Route
-                    key={item.path}
-                    path={item.path}
-                    element={<PageComponent menuId={item.id} isAdmin={isAdmin} />}
-                  />
+                  <Route key={item.path} path={item.path}>
+                    {/* 리스트 페이지 */}
+                    <Route
+                      index
+                      element={
+                        <PageComponent menuId={item.id} isAdmin={isAdmin} />
+                      }
+                    />
+
+                    {/* 상세 페이지 */}
+                    <Route
+                      path=":postId"
+                      element={
+                        <PostDetailPage menuId={item.id} isAdmin={isAdmin} />
+                      }
+                    />
+                  </Route>
                 );
               })}
 
@@ -93,8 +126,12 @@ export function AppRoutes() {
                 path="*"
                 element={
                   <div className="container mx-auto px-4 py-16">
-                    <h1 className="text-4xl font-bold mb-4">404 - Page Not Found</h1>
-                    <p className="text-muted-foreground">The page you're looking for doesn't exist.</p>
+                    <h1 className="text-4xl font-bold mb-4">
+                      404 - Page Not Found
+                    </h1>
+                    <p className="text-muted-foreground">
+                      The page you're looking for doesn't exist.
+                    </p>
                   </div>
                 }
               />

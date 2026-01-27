@@ -3,13 +3,12 @@ package com.kh.blogbackend.post.entity;
 
 import com.kh.blogbackend.menu.entity.Menu;
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.*;
 import java.time.LocalDateTime;
-
-/**
- *Todo
- * Tag 추가 
- */
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 @Entity
 @Table(name = "post", schema = "blog")
@@ -48,6 +47,34 @@ public class Post {
     @Column(nullable = false)
     private Long views = 0L; // 조회수
 
-    @Column(length = 500) 
+    @Column(length = 500)
     private String thumbnail;
+
+    @Column(name = "tags", columnDefinition = "TEXT")
+    private String tags;
+
+    public List<String> getTagList() {
+        if (tags == null || tags.isEmpty()) {
+            return new ArrayList<>();
+        }
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(tags, new TypeReference<List<String>>() {});
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    public void setTagList(List<String> tagList) {
+        if (tagList == null || tagList.isEmpty()) {
+            this.tags = null;
+            return;
+        }
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            this.tags = mapper.writeValueAsString(tagList);
+        } catch (Exception e) {
+            this.tags = null;
+        }
+    }
 }

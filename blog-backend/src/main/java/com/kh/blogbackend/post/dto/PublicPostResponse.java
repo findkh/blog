@@ -1,9 +1,11 @@
+// PublicPostResponse.java
 package com.kh.blogbackend.post.dto;
 
 import com.kh.blogbackend.post.entity.Post;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 public class PublicPostResponse {
@@ -12,7 +14,8 @@ public class PublicPostResponse {
     private Long menuId;
     private String title;
     private String content;
-    private String thumbnail; // 1. 필드 추가
+    private String thumbnail;
+    private List<String> tags;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -22,20 +25,22 @@ public class PublicPostResponse {
                 post.getMenu().getId(),
                 post.getTitle(),
                 post.getContent(),
-                post.getThumbnail(), // 2. 엔티티에서 데이터 추출
+                post.getThumbnail(),
+                post.getTagList(),
                 post.getCreatedAt(),
                 post.getUpdatedAt()
         );
     }
 
-    // 3. 생성자 파라미터 및 할당 추가
     private PublicPostResponse(Long id, Long menuId, String title, String content,
-                               String thumbnail, LocalDateTime createdAt, LocalDateTime updatedAt) {
+            String thumbnail, List<String> tags,
+            LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.menuId = menuId;
         this.title = title;
         this.content = content;
         this.thumbnail = thumbnail;
+        this.tags = tags;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }

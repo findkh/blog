@@ -1,5 +1,5 @@
+// PostAssembler.java
 package com.kh.blogbackend.post.assembler;
-
 
 import com.kh.blogbackend.menu.repository.MenuRepository;
 import com.kh.blogbackend.post.dto.PostRequest;
@@ -16,17 +16,24 @@ public class PostAssembler {
     private final MenuRepository menuRepository;
 
     public Post toEntity(PostRequest request) {
-        return Post.builder()
+        Post post = Post.builder()
                 .menu(menuRepository.findById(request.getMenuId())
                         .orElseThrow(() -> new IllegalArgumentException("Menu not found: " + request.getMenuId())))
                 .title(request.getTitle())
                 .content(request.getContent())
-                .thumbnail(request.getThumbnail()) // 추가: 썸네일 저장
+                .thumbnail(request.getThumbnail())
                 .published(request.isPublished())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .views(0L)
                 .build();
+
+        // 태그 설정
+        if (request.getTags() != null) {
+            post.setTagList(request.getTags());
+        }
+
+        return post;
     }
 
     public void updateEntity(Post post, PostRequest request) {
@@ -34,8 +41,13 @@ public class PostAssembler {
                 .orElseThrow(() -> new IllegalArgumentException("Menu not found: " + request.getMenuId())));
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
-        post.setThumbnail(request.getThumbnail()); // 추가: 썸네일 업데이트
+        post.setThumbnail(request.getThumbnail());
         post.setPublished(request.isPublished());
         post.setUpdatedAt(LocalDateTime.now());
+
+        // 태그 업데이트
+        if (request.getTags() != null) {
+            post.setTagList(request.getTags());
+        }
     }
 }

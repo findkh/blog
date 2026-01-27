@@ -6,6 +6,7 @@ export interface PostRequest {
   content: string;
   published: boolean;
   thumbnail?: string | null;
+  tags?: string[];
 }
 
 export interface PostResponse {
@@ -17,6 +18,7 @@ export interface PostResponse {
   thumbnail?: string | null;
   createdAt: string;
   updatedAt: string;
+  tags?: string[];
 }
 
 export interface ImageUploadResponse {
@@ -62,7 +64,11 @@ export const postApi = {
   /**
    * 게시글 리스트 조회 (무한 스크롤 대응)
    */
-  getPosts: async (menuId: number, page: number, size: number = 10): Promise<PageResponse<PostResponse>> => {
+  getPosts: async (
+    menuId: number,
+    page: number,
+    size: number = 10,
+  ): Promise<PageResponse<PostResponse>> => {
     const response = await axios.get(`${PUBLIC_BASE}/board/${menuId}`, {
       params: { page, size },
     });
@@ -74,9 +80,13 @@ export const postApi = {
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await axios.post<ImageUploadResponse>(`${ADMIN_BASE}/upload-image`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    const response = await axios.post<ImageUploadResponse>(
+      `${ADMIN_BASE}/upload-image`,
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      },
+    );
     return response.data.url;
   },
 
