@@ -83,7 +83,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public Page<Post> findByMenuPaged(Long menuId, Pageable pageable) {
-        return postRepository.findByMenu_IdAndPublishedTrueOrderByCreatedAtDesc(menuId, pageable);
+        return postRepository.findAllByMenuIdOrParentMenuId(menuId, pageable);
     }
 
     @Transactional

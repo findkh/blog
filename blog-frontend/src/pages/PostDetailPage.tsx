@@ -14,7 +14,6 @@ export function PostDetailPage({ menuId, isAdmin }: PostDetailPageProps) {
   const navigate = useNavigate();
   const { postId } = useParams<{ postId: string }>();
   const numericPostId = postId ? Number(postId) : null;
-
   const deleteMutation = useDeletePost();
 
   if (!numericPostId || Number.isNaN(numericPostId)) {

@@ -7,10 +7,9 @@ import { Button } from "../components/ui/button";
 
 interface HomePageProps {
   isAdmin: boolean;
-  viewMode: "card" | "table";
 }
 
-export function HomePage({ isAdmin, viewMode }: HomePageProps) {
+export function HomePage({ isAdmin }: HomePageProps) {
   const blogPosts: any[] = [
     {
       id: 1,
@@ -91,15 +90,11 @@ export function HomePage({ isAdmin, viewMode }: HomePageProps) {
 
       <section id="blog" className="py-16 md:py-20">
         <div className="container mx-auto px-4">
-          {viewMode === "card" ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {blogPosts.map((post) => (
-                <BlogCard key={post.id} {...post} />
-              ))}
-            </div>
-          ) : (
-            <BlogTable posts={blogPosts} />
-          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {blogPosts.map((post) => (
+              <BlogCard key={post.id} {...post} />
+            ))}
+          </div>
         </div>
       </section>
 

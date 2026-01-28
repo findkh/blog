@@ -6,6 +6,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { useState } from "react";
+
 import { MainLayout } from "../layouts/MainLayout";
 import { HomePage } from "../pages/HomePage";
 import { ProfilePage } from "../pages/ProfilePage";
@@ -13,10 +14,11 @@ import { DevLogPage } from "../pages/DevLogPage";
 import { ReleasePage } from "../pages/ReleasePage";
 import { ContactPage } from "../pages/ContactPage";
 import { AdminLogin } from "../pages/AdminLogin";
-import { useMenu } from "../hooks/useMenu";
-import type { MenuItem } from "../axios/menu/menu";
-import TiptapEditor from "../components/tiptap/TiptapEditor";
 import { PostDetailPage } from "../pages/PostDetailPage";
+import TiptapEditor from "../components/tiptap/TiptapEditor";
+
+import { useMenu } from "../hooks/useMenu";
+import type { MenuNode } from "../axios/menu/menu";
 
 const PAGE_COMPONENTS: Record<string, React.ComponentType<any>> = {
   ProfilePage,
@@ -27,12 +29,18 @@ const PAGE_COMPONENTS: Record<string, React.ComponentType<any>> = {
 
 export function AppRoutes() {
   const [isAdmin, setIsAdmin] = useState(false);
-  const [viewMode, setViewMode] = useState<"card" | "table">("card");
 
   const location = useLocation();
   const navigate = useNavigate();
 
   const { data: menuItems = [], isLoading, error } = useMenu();
+
+  const flatten = (nodes: MenuNode[]): MenuNode[] => {
+    return nodes.reduce((acc: MenuNode[], node) => {
+      return [...acc, node, ...flatten(node.children || [])];
+    }, []);
+  };
+  const flatMenus = flatten(menuItems);
 
   const handleLoginSuccess = () => {
     setIsAdmin(true);
@@ -80,48 +88,37 @@ export function AppRoutes() {
         element={
           <MainLayout
             isAdmin={isAdmin}
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-            showViewToggle={location.pathname === "/home"}
             menuItems={menuItems}
             currentPage={location.pathname}
           >
             <Routes>
-              <Route
-                path="/home"
-                element={<HomePage isAdmin={isAdmin} viewMode={viewMode} />}
-              />
+              <Route path="/home" element={<HomePage isAdmin={isAdmin} />} />
 
-              {/* 메뉴 기반 라우트 */}
-              {menuItems.map((item: MenuItem) => {
-                const PageComponent = PAGE_COMPONENTS[item.component];
-                if (!PageComponent) return null;
+              <Route path="/" element={<Navigate to="/home" replace />} />
+
+              {/* 메뉴 기반 라우트 (부모 메뉴만) */}
+              {flatMenus.map((menu) => {
+                const PageComponent =
+                  PAGE_COMPONENTS[menu.component || "DevLogPage"] || DevLogPage;
 
                 return (
-                  <Route key={item.path} path={item.path}>
-                    {/* 리스트 페이지 */}
+                  <Route key={menu.id} path={menu.path}>
                     <Route
                       index
                       element={
-                        <PageComponent menuId={item.id} isAdmin={isAdmin} />
+                        <PageComponent menuId={menu.id} isAdmin={isAdmin} />
                       }
                     />
-
-                    {/* 상세 페이지 */}
                     <Route
                       path=":postId"
                       element={
-                        <PostDetailPage menuId={item.id} isAdmin={isAdmin} />
+                        <PostDetailPage menuId={menu.id} isAdmin={isAdmin} />
                       }
                     />
                   </Route>
                 );
               })}
 
-              {/* 엔트리 포인트 */}
-              <Route path="/" element={<Navigate to="/home" replace />} />
-
-              {/* 404 */}
               <Route
                 path="*"
                 element={
