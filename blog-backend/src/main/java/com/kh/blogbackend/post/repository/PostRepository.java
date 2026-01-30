@@ -1,6 +1,8 @@
 package com.kh.blogbackend.post.repository;
 
 import com.kh.blogbackend.post.entity.Post;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,4 +22,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     // 관리자용 전체 게시글 페이징 조회
     List<Post> findAllByOrderByCreatedAtDesc();
+
+    // ===== 메뉴 무관 (최상위 메뉴) =====
+    Optional<Post> findFirstByPublishedTrueAndCreatedAtLessThanOrderByCreatedAtDesc(
+            LocalDateTime createdAt
+    );
+
+    Optional<Post> findFirstByPublishedTrueAndCreatedAtGreaterThanOrderByCreatedAtAsc(
+            LocalDateTime createdAt
+    );
 }

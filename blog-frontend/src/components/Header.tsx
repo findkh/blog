@@ -60,7 +60,8 @@ export function Header({
                       open={openMenuId === item.id}
                       onOpenChange={(open) => !open && setOpenMenuId(null)}
                     >
-                      <DropdownMenuTrigger asChild>
+                      <div className="relative">
+                        {/* 부모 링크 - 클릭하면 전체 조회 */}
                         <Link
                           to={item.path}
                           className={`px-4 py-2 transition-colors font-medium cursor-pointer inline-block ${
@@ -68,27 +69,31 @@ export function Header({
                               ? "text-accent"
                               : "hover:text-accent"
                           }`}
+                          onMouseEnter={() => setOpenMenuId(item.id)}
+                          onMouseLeave={() => setOpenMenuId(null)}
                         >
                           {item.label}
                         </Link>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent
-                        align="start"
-                        className="min-w-[160px]"
-                        onMouseEnter={() => setOpenMenuId(item.id)}
-                        onMouseLeave={() => setOpenMenuId(null)}
-                      >
-                        {item.children.map((child) => (
-                          <DropdownMenuItem key={child.id} asChild>
-                            <Link
-                              to={child.path}
-                              className="cursor-pointer w-full"
-                            >
-                              {child.label}
-                            </Link>
-                          </DropdownMenuItem>
-                        ))}
-                      </DropdownMenuContent>
+
+                        {/* 드롭다운 콘텐츠 - 호버시 나타남 */}
+                        {openMenuId === item.id && (
+                          <div
+                            className="absolute top-full left-0 mt-1 min-w-[160px] bg-popover text-popover-foreground rounded-md border shadow-md p-1 z-50"
+                            onMouseEnter={() => setOpenMenuId(item.id)}
+                            onMouseLeave={() => setOpenMenuId(null)}
+                          >
+                            {item.children.map((child) => (
+                              <Link
+                                key={child.id}
+                                to={child.path}
+                                className="block px-2 py-1.5 text-sm rounded-sm hover:bg-accent hover:text-accent-foreground cursor-pointer"
+                              >
+                                {child.label}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </DropdownMenu>
                   ) : (
                     // 자식이 없는 경우: 일반 링크

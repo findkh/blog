@@ -28,7 +28,6 @@ public class PostController {
 
     @GetMapping("/{id}")
     public PublicPostResponse getPost(@PathVariable Long id) {
-        Post post = postService.getPostForPublic(id);
-        return PublicPostResponse.from(post);
+        return postService.getPostForPublic(id);
     }
 }

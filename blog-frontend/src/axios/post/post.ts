@@ -9,16 +9,24 @@ export interface PostRequest {
   tags?: string[];
 }
 
+export interface PostNav {
+  id: number;
+  title: string;
+}
+
 export interface PostResponse {
   id: number;
   menuId: number;
   title: string;
   content: string;
-  published: boolean;
   thumbnail?: string | null;
+  tags: string[];
   createdAt: string;
   updatedAt: string;
-  tags?: string[];
+
+  // 이전 / 다음 글 (없으면 null)
+  prevPost: PostNav | null;
+  nextPost: PostNav | null;
 }
 
 export interface ImageUploadResponse {

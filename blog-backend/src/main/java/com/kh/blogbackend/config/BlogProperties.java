@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "blog")
 public class BlogProperties {
+    private String profileImageUrl;
     private String imageUrl;
     private String imagePath;
 }

@@ -2,11 +2,15 @@ package com.kh.blogbackend.post.service;
 
 import com.kh.blogbackend.config.BlogProperties;
 import com.kh.blogbackend.post.assembler.PostAssembler;
+import com.kh.blogbackend.post.dto.PostNavDto;
 import com.kh.blogbackend.post.dto.PostRequest;
+import com.kh.blogbackend.post.dto.PublicPostResponse;
 import com.kh.blogbackend.post.entity.Post;
 import com.kh.blogbackend.post.repository.PostRepository;
 import com.sksamuel.scrimage.ImmutableImage;
 import com.sksamuel.scrimage.webp.WebpWriter;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -86,12 +90,29 @@ public class PostService {
         return postRepository.findAllByMenuIdOrParentMenuId(menuId, pageable);
     }
 
-    @Transactional
-    public Post getPostForPublic(Long id) {
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Post not found: " + id));
-        if (post.isPublished()) post.setViews(post.getViews() + 1);
-        return post;
+    @Transactional(readOnly = true)
+    public PublicPostResponse getPostForPublic(Long postId) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("Post not found: " + postId));
+
+        LocalDateTime createdAt = post.getCreatedAt();
+
+        Optional<Post> prev = postRepository
+                .findFirstByPublishedTrueAndCreatedAtLessThanOrderByCreatedAtDesc(createdAt);
+
+        Optional<Post> next = postRepository
+                .findFirstByPublishedTrueAndCreatedAtGreaterThanOrderByCreatedAtAsc(createdAt);
+
+        PostNavDto prevDto = prev
+                .map(p -> new PostNavDto(p.getId(), p.getTitle()))
+                .orElse(null);
+
+        PostNavDto nextDto = next
+                .map(p -> new PostNavDto(p.getId(), p.getTitle()))
+                .orElse(null);
+
+        return PublicPostResponse.from(post, prevDto, nextDto);
     }
 
     @Transactional(readOnly = true)
