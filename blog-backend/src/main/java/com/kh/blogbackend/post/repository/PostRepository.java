@@ -31,4 +31,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Optional<Post> findFirstByPublishedTrueAndCreatedAtGreaterThanOrderByCreatedAtAsc(
             LocalDateTime createdAt
     );
+
+    // 발행된 게시글만 조회
+    Page<Post> findByPublishedTrue(Pageable pageable);
 }

@@ -8,6 +8,8 @@ export interface ProfileResponse {
   blog: string;
   email: string;
   image?: string;
+  blogTitle: string;
+  blogDescription: string;
 }
 
 export interface ProfileRequest {
@@ -18,6 +20,8 @@ export interface ProfileRequest {
   blog: string;
   email: string;
   image?: string;
+  blogTitle: string;
+  blogDescription: string;
 }
 
 export const getProfile = async (): Promise<ProfileRequest> => {

@@ -1,14 +1,9 @@
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "./ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import type { MenuNode } from "../axios/menu/menu";
+import type { MenuNode } from "../../axios/menu/menu";
+import { DropdownMenu } from "../ui/dropdown-menu";
+import { Button } from "../ui/button";
 
 interface HeaderProps {
   isAdmin: boolean;
@@ -135,6 +130,7 @@ export function Header({
             variant="ghost"
             size="icon"
             className="md:hidden"
+            aria-label={mobileMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             <Menu className="w-6 h-6" />

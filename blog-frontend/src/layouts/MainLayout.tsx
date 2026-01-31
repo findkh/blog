@@ -1,13 +1,11 @@
-import { Header } from "../components/Header";
-import { Footer } from "../components/Footer";
 import type { ReactNode } from "react";
 import type { MenuNode } from "../axios/menu/menu";
+import { Header } from "../components/common/Header";
+import { Footer } from "../components/common/Footer";
 
 interface MainLayoutProps {
   children: ReactNode;
   isAdmin: boolean;
-  viewMode?: "card" | "table";
-  onViewModeChange?: (mode: "card" | "table") => void;
   showViewToggle?: boolean;
   menuItems: MenuNode[];
   currentPage?: string;
@@ -27,7 +25,7 @@ export function MainLayout({
         currentPage={currentPage}
       />
       <main className="flex-1">{children}</main>
-      <Footer />
+      <Footer menuItems={menuItems} />
     </div>
   );
 }

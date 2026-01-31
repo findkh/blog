@@ -14,4 +14,6 @@ public class ProfileResponse {
     private String blog;
     private String email;
     private String image;
+    private String bioTitle;
+    private String blogDescription;
 }

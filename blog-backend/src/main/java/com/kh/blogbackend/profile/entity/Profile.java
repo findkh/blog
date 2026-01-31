@@ -35,13 +35,21 @@ public class Profile {
     @Column(length = 300)
     private String image;
 
+    @Column(length = 100)
+    private String blogTitle;
+
+    @Column(length = 300)
+    private String blogDescription;
+
     public void update(
             String name,
             String bio,
             String github,
             String blog,
             String email,
-            String image
+            String image,
+            String blogTitle,
+            String blogDescription
     ) {
         this.name = name;
         this.bio = bio;
@@ -49,5 +57,7 @@ public class Profile {
         this.blog = blog;
         this.email = email;
         this.image = image;
+        this.blogTitle = blogTitle;
+        this.blogDescription = blogDescription;
     }
 }

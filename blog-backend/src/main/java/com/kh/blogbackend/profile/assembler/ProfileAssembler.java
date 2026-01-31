@@ -16,7 +16,9 @@ public class ProfileAssembler {
                 request.getGithub(),
                 request.getBlog(),
                 request.getEmail(),
-                imageUrl
+                imageUrl,
+                request.getBioTitle(),
+                request.getBlogDescription()
         );
         return profile;
     }
@@ -28,7 +30,9 @@ public class ProfileAssembler {
                 request.getGithub(),
                 request.getBlog(),
                 request.getEmail(),
-                imageUrl
+                imageUrl,
+                request.getBioTitle(),
+                request.getBlogDescription()
         );
     }
 
@@ -40,7 +44,10 @@ public class ProfileAssembler {
                 profile.getGithub(),
                 profile.getBlog(),
                 profile.getEmail(),
-                profile.getImage()
+                profile.getImage(),
+                profile.getBlogTitle(),
+                profile.getBlogDescription()
+
         );
     }
 }
